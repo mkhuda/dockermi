@@ -29,7 +29,7 @@ Examples:
     ./dockermi.sh down`)
 }
 
-func main() {
+func RunDockermi() error {
 	if len(os.Args) > 1 && os.Args[1] == "--version" {
 		fmt.Println("Dockermi version:", version)
 		os.Exit(0)
@@ -40,13 +40,13 @@ func main() {
 
 	if *help {
 		displayHelp()
-		return
+		return nil
 	}
 
 	projectDir, err := os.Getwd()
 	if err != nil {
 		color.Red("Error getting current directory: %v", err)
-		return
+		return err
 	}
 
 	// Find docker-compose.yml files
@@ -54,16 +54,26 @@ func main() {
 
 	if !foundDockerCompose {
 		color.Yellow("No docker-compose.yml found within this folder")
-		return
+		return err
 	}
 
 	// Create the dockermi.sh script
 	scriptPath := filepath.Join(projectDir, "dockermi.sh")
 	if err := script.CreateDockermiScript(scriptPath, services); err != nil {
 		color.Red("Error creating dockermi.sh file: %v", err)
-		return
+		return err
 	}
 
 	color.Green("Generated script: %s", scriptPath)
 	color.Blue("You can now run ./dockermi.sh up or ./dockermi.sh down")
+
+	return nil
+
+}
+
+func main() {
+	if err := RunDockermi(); err != nil {
+		color.Red("Error: %v", err)
+		os.Exit(1)
+	}
 }
