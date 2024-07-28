@@ -12,7 +12,7 @@ import (
 	"github.com/fatih/color"
 )
 
-const version = "0.0.3"
+const version = "0.0.4"
 
 // displayHelp prints the usage information for the dockermi command to the console.
 func displayHelp() {

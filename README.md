@@ -187,29 +187,8 @@ If you encounter any bugs or have suggestions for improvements, please feel free
 
 This project is licensed under the GNU General Public License (GPL). See the [LICENSE](LICENSE) file for details.
 
-## Contact
-
-For any questions or inquiries, please reach out to [your-email@example.com](mailto:your-email@example.com).
-
 ## Acknowledgments
 
 - Thanks to the contributors and the open-source community for their support and inspiration.
 - Special thanks to the maintainers of Go, Docker, and Docker Compose for providing powerful tools that make this project possible.
 ````
-
-### License File (LICENSE)
-
-You should also create a `LICENSE` file in the root of your project. Here’s a sample template for the GNU General Public License (GPL):
-
-```text
-GNU GENERAL PUBLIC LICENSE
-Version 3, 29 June 2007
-
-Copyright (C) [year]  [your name or organization]
-Everyone is permitted to copy and distribute verbatim copies
-of this license document, but changing it is not allowed.
-
-...
-
-[Include the rest of the GNU GPL text here]
-```
