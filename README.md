@@ -31,7 +31,7 @@ To install the Dockermi application, follow the instructions below based on your
 
 ### For Linux and macOS
 
-1. Open your terminal.
+1. Open your terminal and clone this repo `git clone https://github.com/mkhuda/dockermi.git`.
 2. Navigate to the directory where you have the Dockermi project:
    ```bash
    cd path/to/your/dockermi
@@ -53,7 +53,7 @@ This will build the application for your OS and install it to `/usr/local/bin`, 
 
 ### For Windows
 
-1. Open Command Prompt.
+1. Open Command Prompt and clone this repo `git clone https://github.com/mkhuda/dockermi.git`.
 2. Navigate to the directory where you have the Dockermi project:
    ```cmd
    cd path\to\your\dockermi
