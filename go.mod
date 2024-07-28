@@ -1,6 +1,6 @@
 module github.com/mkhuda/dockermi
 
-go 1.22.5
+go 1.18
 
 require (
 	github.com/fatih/color v1.17.0
