@@ -21,6 +21,17 @@ type DockerCompose struct {
 }
 
 // FindServices searches for docker-compose.yml files in the specified directory.
+// It scans the directory and its subdirectories for docker-compose.yml files,
+// parses them to extract services with specific labels, and returns a list of
+// these services along with a boolean indicating if any docker-compose.yml files were found.
+//
+// Parameters:
+//   - root: the root directory to start the search from
+//
+// Returns:
+//   - []struct{Order, ServiceName, ComposeFile string}: a slice of structs containing
+//     the order, service name, and path to the docker-compose file for each relevant service
+//   - bool: a boolean indicating if any docker-compose.yml files were found
 func FindServices(root string) ([]struct {
 	Order       string
 	ServiceName string

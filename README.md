@@ -24,7 +24,7 @@
 
 ### Prerequisites
 
-- [Go](https://golang.org/dl/) (version 1.15 or later)
+- [Go](https://golang.org/dl/) (version 1.18 or later)
 - Docker and Docker Compose installed on your system.
 
 ### Installing Dockermi

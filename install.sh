@@ -5,13 +5,13 @@ install_app() {
     case "$1" in
         linux)
             echo "Installing dockermi on Linux..."
-            cp dockermi-linux /usr/local/bin/dockermi
+            cp dockermi /usr/local/bin/dockermi
             chmod +x /usr/local/bin/dockermi
             echo "dockermi installed! You can run it by typing 'dockermi' in your terminal."
             ;;
         darwin)
             echo "Installing dockermi on macOS..."
-            cp dockermi-macos /usr/local/bin/dockermi
+            cp dockermi /usr/local/bin/dockermi
             chmod +x /usr/local/bin/dockermi
             echo "dockermi installed! You can run it by typing 'dockermi' in your terminal."
             ;;

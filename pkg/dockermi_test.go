@@ -1,16 +1,18 @@
-package main
+package dockermi_test
 
 import (
 	"os"
 	"path/filepath"
 	"testing"
+
+	dockermi "github.com/mkhuda/dockermi/pkg"
 )
 
 // Helper function to verify the existence of a docker-compose.yml file
 func verifyComposeFileExists(t *testing.T, relativePath string) {
 	t.Helper()
 	// Construct the absolute path to the docker-compose.yml file
-	composeFile := filepath.Join("./test", relativePath)
+	composeFile := filepath.Join("../test", relativePath)
 	if _, err := os.Stat(composeFile); os.IsNotExist(err) {
 		t.Fatalf("Expected docker-compose file does not exist: %v", composeFile)
 	}
@@ -23,12 +25,17 @@ func TestCreatedDockermi(t *testing.T) {
 	verifyComposeFileExists(t, "postgres/docker-compose.yml")
 
 	// Change to the directory of the compose files
-	if err := os.Chdir("./test/"); err != nil {
+	if err := os.Chdir("../test/"); err != nil {
 		t.Fatalf("Failed to change directory: %v", err)
 	}
 
+	projectDir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Error getting current working directory: %v", err)
+	}
+
 	// Call the main function
-	if err := RunDockermi(); err != nil { // Assuming you refactored to RunDockermi
+	if _, err := dockermi.RunDockermi(projectDir); err != nil { // Assuming you refactored to RunDockermi
 		t.Errorf("RunDockermi failed: %v", err)
 	}
 

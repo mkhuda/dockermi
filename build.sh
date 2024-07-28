@@ -5,12 +5,12 @@ build_for_os() {
     case "$1" in
         linux)
             echo "Building for Linux..."
-            GOOS=linux GOARCH=amd64 go build -o dockermi-linux ./dockermi.go
+            GOOS=linux GOARCH=amd64 go build -o dockermi main.go
             echo "Build completed! The executable is dockermi-linux."
             ;;
         darwin)
             echo "Building for macOS..."
-            GOOS=darwin GOARCH=amd64 go build -o dockermi-macos ./dockermi.go
+            GOOS=darwin GOARCH=amd64 go build -o dockermi main.go
             echo "Build completed! The executable is dockermi-macos."
             ;;
         *)

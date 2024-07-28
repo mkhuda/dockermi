@@ -23,7 +23,7 @@ jobs:
 
       - name: Build for Linux
         run: |
-          GOOS=linux GOARCH=amd64 go build -o dockermi-linux dockermi.go
+          GOOS=linux GOARCH=amd64 go build -o dockermi main.go
 
       - name: Test
-        run: go test -v .
+        run: go test -v pkg/dockermi_test.go
