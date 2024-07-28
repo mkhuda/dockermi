@@ -14,6 +14,7 @@ import (
 
 const version = "0.0.1"
 
+// displayHelp prints the usage information for the dockermi command to the console.
 func displayHelp() {
 	fmt.Println(`Usage: dockermi [--help]
 
@@ -29,6 +30,7 @@ Examples:
     ./dockermi.sh down`)
 }
 
+// RunDockermi executes the main logic of the dockermi command.
 func RunDockermi() error {
 	if len(os.Args) > 1 && os.Args[1] == "--version" {
 		fmt.Println("Dockermi version:", version)
@@ -71,7 +73,9 @@ func RunDockermi() error {
 
 }
 
+// main is the entry point of the application.
 func main() {
+	// Execute the RunDockermi function and handle any errors
 	if err := RunDockermi(); err != nil {
 		color.Red("Error: %v", err)
 		os.Exit(1)
