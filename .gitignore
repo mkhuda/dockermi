@@ -1,3 +1,5 @@
 dockermi-macos
+dockermi-linux
+dockermi-windows
 *.sh
 *.exe
