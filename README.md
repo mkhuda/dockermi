@@ -2,6 +2,8 @@
 
 **Dockermi** is a command-line tool for managing Docker services defined in `docker-compose.yml` files. It simplifies the process of starting and stopping multiple Docker services with a single command, generating a shell script (`dockermi.sh`) that can be executed to perform the desired actions.
 
+![Screenshot 2024-07-28 164852](https://github.com/user-attachments/assets/edb4e6b6-e788-49e2-a4db-148896a416c7)
+
 ## Features
 
 - Automatically discovers `docker-compose.yml` files in the current directory and its subdirectories.
@@ -31,7 +33,7 @@ To install the Dockermi application, follow the instructions below based on your
 
 ### For Linux and macOS
 
-1. Open your terminal.
+1. Open your terminal and clone this repo `git clone https://github.com/mkhuda/dockermi.git`.
 2. Navigate to the directory where you have the Dockermi project:
    ```bash
    cd path/to/your/dockermi
@@ -53,7 +55,7 @@ This will build the application for your OS and install it to `/usr/local/bin`, 
 
 ### For Windows
 
-1. Open Command Prompt.
+1. Open Command Prompt and clone this repo `git clone https://github.com/mkhuda/dockermi.git`.
 2. Navigate to the directory where you have the Dockermi project:
    ```cmd
    cd path\to\your\dockermi
