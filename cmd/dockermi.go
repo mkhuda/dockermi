@@ -6,8 +6,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"dockermi/internal/dockercompose"
-	"dockermi/internal/script"
+	"github.com/mkhuda/dockermi/internal/dockercompose"
+	"github.com/mkhuda/dockermi/internal/script"
 
 	"github.com/fatih/color"
 )
