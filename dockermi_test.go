@@ -10,7 +10,7 @@ import (
 func verifyComposeFileExists(t *testing.T, relativePath string) {
 	t.Helper()
 	// Construct the absolute path to the docker-compose.yml file
-	composeFile := filepath.Join("../test", relativePath)
+	composeFile := filepath.Join("./test", relativePath)
 	if _, err := os.Stat(composeFile); os.IsNotExist(err) {
 		t.Fatalf("Expected docker-compose file does not exist: %v", composeFile)
 	}
@@ -23,7 +23,7 @@ func TestCreatedDockermi(t *testing.T) {
 	verifyComposeFileExists(t, "postgres/docker-compose.yml")
 
 	// Change to the directory of the compose files
-	if err := os.Chdir("../test/"); err != nil {
+	if err := os.Chdir("./test/"); err != nil {
 		t.Fatalf("Failed to change directory: %v", err)
 	}
 

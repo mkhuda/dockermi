@@ -6,7 +6,7 @@ setlocal
 echo Building for Windows...
 set GOOS=windows
 set GOARCH=amd64
-go build -o dockermi.exe cmd\dockermi.go
+go build -o dockermi.exe dockermi.go
 if errorlevel 1 (
     echo Build failed!
     exit /b 1
