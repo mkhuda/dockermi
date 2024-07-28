@@ -15,7 +15,7 @@ import (
 	"github.com/fatih/color"
 )
 
-const version = "0.0.6"
+const version = "0.0.8"
 
 // RunDockermi executes the main logic of the dockermi command. It takes a
 // projectDir parameter, which specifies the directory where the function

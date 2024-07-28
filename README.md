@@ -1,4 +1,5 @@
 # Dockermi
+[![Go Reference](https://pkg.go.dev/badge/github.com/mkhuda/dockermi.svg)](https://pkg.go.dev/github.com/mkhuda/dockermi)
 
 **Dockermi** is a command-line tool for managing Docker services defined in `docker-compose.yml` files. It simplifies the process of starting and stopping multiple Docker services with a single command, generating a shell script (`dockermi.sh`) that can be executed to perform the desired actions.
 
