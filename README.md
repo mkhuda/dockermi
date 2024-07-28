@@ -129,6 +129,86 @@ dockermi
 
 This command creates a `dockermi.sh` script in the current directory, which contains functions for starting and stopping your Docker services.
 
+### Annotations in docker-compose.yml
+
+#### 1. `dockermi.order`
+
+- **Description**: This annotation specifies the order in which the Docker services should be started or stopped. Services with lower order values are started before those with higher values. This is particularly useful when certain services depend on others being up and running first.
+
+- **Type**: String (represents a numeric value)
+
+- **Example**:
+    ```yaml
+    services:
+      web:
+        image: nginx:latest
+        ports:
+          - "80:80"
+        labels:
+          dockermi.order: "1"  # This service will start first
+    ```
+
+- **Usage**: You can set this label in your `docker-compose.yml` to control the startup order of your services, ensuring that dependencies are handled appropriately. For example, a database service might have an order of `1`, while a web service that depends on it could have an order of `2`.
+
+- **Multiple Services**: If multiple services are defined in the `docker-compose.yml` file with the same `dockermi.order`, only the first service that appears in the file will be used for execution. Be mindful of the order in which services are listed.
+
+#### 2. `dockermi.active`
+
+- **Description**: This annotation indicates whether the service is currently active or should be started when the `dockermi.sh` script is executed. If set to `"true"`, the service will be included in the startup process. If set to `"false"`, the service will be skipped during startup.
+
+- **Type**: String (boolean value, "true" or "false")
+
+- **Example**:
+    ```yaml
+    services:
+      web:
+        image: nginx:latest
+        ports:
+          - "80:80"
+        labels:
+          dockermi.active: "true"  # This service is active and will be started
+    ```
+
+- **Usage**: Use this label to manage which services should be actively started or stopped. For instance, if you have a service that is temporarily not needed, you can set `dockermi.active: "false"` to prevent it from starting.
+
+Here is how you might define a service in your `docker-compose.yml` file using both annotations:
+
+```yaml
+version: '3.8'
+
+services:
+  web:
+    image: nginx:latest
+    ports:
+      - "80:80"
+    labels:
+      dockermi.order: "1"    # Service start order
+      dockermi.active: "true" # This service is active
+
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    labels:
+      dockermi.order: "2"    # This service will start after 'web'
+      dockermi.active: "true" # This service is also active
+```
+
+#### Summary
+
+- The `dockermi.order` annotation controls the startup order of services.
+- The `dockermi.active` annotation determines whether a service should be active during the execution of the `dockermi.sh` script.
+- When multiple services have the same `dockermi.order`, only the first service that appears in the `docker-compose.yml` file will be used for execution.
+- Using these annotations helps to manage complex service dependencies effectively, ensuring that the right services are up and running when needed.
+
+#### Further Considerations
+
+- **Multiple Services**: When defining multiple services, ensure that their `dockermi.order` values are unique (still ok, if there is multiple version) and reflect the intended startup sequence. If services share the same order value, only the first one listed will be activated, which can lead to unexpected behavior if not managed correctly.
+- **Dynamic Activation**: You can dynamically set the `dockermi.active` label based on environment variables or configuration settings to enable/disable services as needed.
+
+By incorporating these annotations into your `docker-compose.yml` file, you can leverage the full power of Dockermi to manage your Docker services efficiently. If you have any further questions or need clarification, feel free to ask!
+
+
 ### Running the Generated Script
 
 1. To start the services defined in your `docker-compose.yml` files, run:
