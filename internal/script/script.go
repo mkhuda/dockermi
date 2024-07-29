@@ -7,15 +7,12 @@ import (
 	"time"
 
 	"github.com/fatih/color"
+	DockermiTypes "github.com/mkhuda/dockermi/types"
 	"github.com/schollz/progressbar/v3"
 )
 
 // CreateDockermiScript generates the dockermi.sh script based on the provided services.
-func CreateDockermiScript(scriptPath string, services []struct {
-	Order       string
-	ServiceName string
-	ComposeFile string
-}) error {
+func CreateDockermiScript(scriptPath string, services DockermiTypes.ServiceScriptReturn) error {
 	dockermiScript, err := os.Create(scriptPath)
 	if err != nil {
 		return err

@@ -5,20 +5,9 @@ import (
 	"path/filepath"
 
 	"github.com/fatih/color"
+	DockermiTypes "github.com/mkhuda/dockermi/types"
 	"gopkg.in/yaml.v2"
 )
-
-// Service represents a service in the docker-compose.yml file.
-type Service struct {
-	Image  string            `yaml:"image"`
-	Ports  []string          `yaml:"ports"`
-	Labels map[string]string `yaml:"labels"`
-}
-
-// DockerCompose represents the structure of the docker-compose.yml file.
-type DockerCompose struct {
-	Services map[string]Service `yaml:"services"`
-}
 
 // FindServices searches for docker-compose.yml files in the specified directory.
 // It scans the directory and its subdirectories for docker-compose.yml files,
@@ -32,16 +21,8 @@ type DockerCompose struct {
 //   - []struct{Order, ServiceName, ComposeFile string}: a slice of structs containing
 //     the order, service name, and path to the docker-compose file for each relevant service
 //   - bool: a boolean indicating if any docker-compose.yml files were found
-func FindServices(root string) ([]struct {
-	Order       string
-	ServiceName string
-	ComposeFile string
-}, bool) {
-	var services []struct {
-		Order       string
-		ServiceName string
-		ComposeFile string
-	}
+func FindServices(root string) (DockermiTypes.ServiceScriptReturn, bool) {
+	var services DockermiTypes.ServiceScriptReturn
 
 	foundDockerCompose := false
 
@@ -61,7 +42,7 @@ func FindServices(root string) ([]struct {
 			return err
 		}
 
-		var dockerCompose DockerCompose
+		var dockerCompose DockermiTypes.DockerCompose
 		if err := yaml.Unmarshal(data, &dockerCompose); err != nil {
 			return err
 		}
@@ -75,11 +56,7 @@ func FindServices(root string) ([]struct {
 				color.Blue("Order: %s", order)
 				color.Yellow("Active: %s", active)
 
-				services = append(services, struct {
-					Order       string
-					ServiceName string
-					ComposeFile string
-				}{
+				services = append(services, DockermiTypes.ServiceScript{
 					Order:       order,
 					ServiceName: serviceName,
 					ComposeFile: path,

@@ -15,7 +15,7 @@ import (
 	"github.com/fatih/color"
 )
 
-const version = "0.0.8"
+const version = "0.0.9"
 
 // RunDockermi executes the main logic of the dockermi command. It takes a
 // projectDir parameter, which specifies the directory where the function
@@ -41,13 +41,11 @@ func RunDockermi(projectDir string) (string, error) {
 		return "", nil
 	}
 
-	// projectDir, err := os.Getwd()
-	// if err != nil {
-	// 	color.Red("Error getting current directory: %v", err)
-	// 	return err
-	// }
+	return generateScripts(projectDir)
+}
 
-	// Find docker-compose.yml files
+// generateScripts finds docker-compose.yml files and generates corresponding scripts.
+func generateScripts(projectDir string) (string, error) {
 	services, foundDockerCompose := dockercompose.FindServices(projectDir)
 
 	if !foundDockerCompose {
