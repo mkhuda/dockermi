@@ -28,4 +28,4 @@ jobs:
           GOOS=linux GOARCH=amd64 go build -o dockermi main.go
 
       - name: Test
-        run: go test -v pkg/dockermi_test.go
+        run: go test -v ./..

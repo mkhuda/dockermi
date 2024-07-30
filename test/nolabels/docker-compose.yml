@@ -1,0 +1,4 @@
+services:
+  nolabels:
+    image: hello-world
+

@@ -127,7 +127,7 @@ To generate the `dockermi.sh` script, run:
 dockermi
 ```
 
-This command creates a `dockermi.sh` script in the current directory, which contains functions for starting and stopping your Docker services.
+This command creates a `dockermi.sh` script in the current directory, which contains functions for starting and stopping (at the moment) your Docker services.
 
 ### Annotations in docker-compose.yml
 
@@ -171,6 +171,9 @@ This command creates a `dockermi.sh` script in the current directory, which cont
 
 - **Usage**: Use this label to manage which services should be actively started or stopped. For instance, if you have a service that is temporarily not needed, you can set `dockermi.active: "false"` to prevent it from starting.
 
+#### 3. [Experimental] `dockermi.key`
+- **Description**: This annotation will be used later if a grouping service is implemented. We aim to make the `dockermi.sh` file be saved in the `/home/.dockermi/*` folder.
+
 Here is how you might define a service in your `docker-compose.yml` file using both annotations:
 
 ```yaml
@@ -184,6 +187,7 @@ services:
     labels:
       dockermi.order: "1"    # Service start order
       dockermi.active: "true" # This service is active
+      dockermi.key: "group1" # a group of service
 
   db:
     image: mysql:latest
@@ -192,12 +196,14 @@ services:
     labels:
       dockermi.order: "2"    # This service will start after 'web'
       dockermi.active: "true" # This service is also active
+      dockermi.key: "group1"
 ```
 
 #### Summary
 
 - The `dockermi.order` annotation controls the startup order of services.
-- The `dockermi.active` annotation determines whether a service should be active during the execution of the `dockermi.sh` script.
+- The `dockermi.active` annotation determines whether a service should be active during the execution of the `dockermi.sh` script 
+- The `dockermi.key` [experimental] annotation serves as a unique identifier for a service (grouping), allowing for easier reference and management within the Docker environment.
 - When multiple services have the same `dockermi.order`, only the first service that appears in the `docker-compose.yml` file will be used for execution.
 - Using these annotations helps to manage complex service dependencies effectively, ensuring that the right services are up and running when needed.
 
@@ -214,13 +220,13 @@ By incorporating these annotations into your `docker-compose.yml` file, you can 
 1. To start the services defined in your `docker-compose.yml` files, run:
 
     ```bash
-    ./dockermi.sh up
+    dockermi up (--args referred to docker compose arg)
     ```
 
 2. To stop the services, run:
 
     ```bash
-    ./dockermi.sh down
+    dockermi down (--args referred to docker compose arg)
     ```
 
 ### Help
@@ -232,30 +238,6 @@ dockermi --help
 ```
 
 This will show the usage details and available commands.
-
-## Contributing
-
-We welcome contributions to improve the functionality and usability of Dockermi. Here’s how you can help:
-
-1. **Fork the Repository**: Click the "Fork" button at the top right of the page to create your own copy of the repository.
-2. **Create a Branch**: Create a new branch for your feature or bug fix.
-
-    ```bash
-    git checkout -b feature/my-feature
-    ```
-
-3. **Make Changes**: Implement your feature or fix.
-4. **Commit Your Changes**: Commit your changes with a descriptive message.
-
-    ```bash
-    git commit -m "Add my feature"
-    ```
-
-5. **Push to Your Branch**: Push your changes to GitHub.
-
-    ```bash
-    git push origin feature/my-feature
-    ```
 
 6. **Create a Pull Request**: Go to the original repository and click on "New Pull Request."
 

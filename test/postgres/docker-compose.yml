@@ -6,3 +6,4 @@ services:
     labels:
       dockermi.order: "1"
       dockermi.active: "true"
+      dockermi.key: "myweb"

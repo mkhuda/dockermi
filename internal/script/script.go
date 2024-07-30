@@ -20,7 +20,7 @@ func CreateDockermiScript(scriptPath string, services DockermiTypes.ServiceScrip
 	defer dockermiScript.Close()
 
 	dockermiScript.WriteString("#!/bin/bash\n\n")
-	dockermiScript.WriteString("# Usage: ./dockermi.sh [up|down]\n\n")
+	dockermiScript.WriteString("# Usage: ./dockermi.sh [up|down] [options]\n\n")
 
 	// Sort services for starting (ascending order)
 	sort.Slice(services, func(i, j int) bool {
@@ -35,10 +35,11 @@ func CreateDockermiScript(scriptPath string, services DockermiTypes.ServiceScrip
 
 	for _, service := range services {
 		dockermiScript.WriteString(fmt.Sprintf("    echo \"Starting %s...\"\n", service.ServiceName))
-		dockermiScript.WriteString(fmt.Sprintf("    docker-compose -f \"%s\" up -d\n", service.ComposeFile))
-
+		dockermiScript.WriteString(fmt.Sprintf("    docker-compose -f \"%s\" up \"$@\" \n", service.ComposeFile)) // Pass additional options
+		color.Cyan("\n Creating script for %v", service.ServiceName)
 		bar.Add(1)
-		time.Sleep(500 * time.Millisecond) // Simulate delay for demonstration
+
+		time.Sleep(500 * time.Millisecond)
 	}
 	dockermiScript.WriteString("}\n\n")
 
@@ -49,32 +50,32 @@ func CreateDockermiScript(scriptPath string, services DockermiTypes.ServiceScrip
 	})
 	for _, service := range services {
 		dockermiScript.WriteString(fmt.Sprintf("    echo \"Stopping %s...\"\n", service.ServiceName))
-		dockermiScript.WriteString(fmt.Sprintf("    docker-compose -f \"%s\" down\n", service.ComposeFile))
-
+		dockermiScript.WriteString(fmt.Sprintf("    docker-compose -f \"%s\" down \"$@\"\n", service.ComposeFile)) // Pass additional options
 		bar.Add(1)
 		time.Sleep(500 * time.Millisecond) // Simulate delay for demonstration
 	}
 	dockermiScript.WriteString("}\n\n")
 
 	// Add main logic to call the appropriate function based on the argument
-	dockermiScript.WriteString(`if [ "$#" -ne 1 ]; then
+	dockermiScript.WriteString(`if [ "$#" -lt 1 ]; then
     echo "Invalid argument!"
-    echo "Usage: $0 [up|down]"
+    echo "Usage: $0 [up|down] [options]"
     exit 1
 fi
 
 ACTION=$1
+shift
 
 case "$ACTION" in
     up)
-        start_services
+        start_services "$@"
         ;;
     down)
-        stop_services
+        stop_services "$@"
         ;;
     *)
         echo "Invalid argument: $ACTION"
-        echo "Usage: $0 [up|down]"
+        echo "Usage: $0 [up|down] [options]"
         exit 1
         ;;
 esac
@@ -85,6 +86,8 @@ esac
 		color.Red("Error making the script executable: %v", err)
 		return err
 	}
+
+	color.Unset()
 
 	return nil
 }

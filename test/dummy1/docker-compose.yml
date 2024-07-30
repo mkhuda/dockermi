@@ -1,0 +1,6 @@
+services:
+  dummy1:
+    image: hello-world
+    labels:
+      dockermi.order: "1"
+      dockermi.active: "true"

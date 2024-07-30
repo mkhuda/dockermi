@@ -1,0 +1,7 @@
+services:
+  inactive:
+    image: hello-world
+    labels:
+      dockermi.order: "2"
+      dockermi.active: "false"
+
