@@ -16,7 +16,7 @@ import (
 	"github.com/fatih/color"
 )
 
-const version = "0.1.0"
+const version = "0.1.1"
 
 // RunDockermi executes the main logic of the dockermi command. It takes a
 // projectDir parameter, which specifies the directory where the function
@@ -29,13 +29,18 @@ const version = "0.1.0"
 //   - string: Path location of created dockermi.sh
 //   - error: if any errors occur during the execution, they are returned
 func RunDockermi(projectDir string) (string, error) {
-	if len(os.Args) > 1 && os.Args[1] == "--version" {
+	// Define flags for help and version
+	help := flag.Bool("help", false, "Display help information")
+	versionFlag := flag.Bool("version", false, "Display version information")
+	// Short version flag
+	shortVersionFlag := flag.Bool("v", false, "Display version information")
+	flag.Parse()
+
+	// Check for version flags
+	if *versionFlag || *shortVersionFlag {
 		fmt.Println("Dockermi version:", version)
 		os.Exit(0)
 	}
-
-	help := flag.Bool("help", false, "Display help information")
-	flag.Parse()
 
 	if *help {
 		dockermiUtils.DisplayHelp()

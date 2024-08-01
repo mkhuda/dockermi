@@ -20,7 +20,7 @@ func CreateDockermiScript(scriptPath string, services DockermiTypes.ServiceScrip
 	defer dockermiScript.Close()
 
 	dockermiScript.WriteString("#!/bin/bash\n\n")
-	dockermiScript.WriteString("# Usage: ./dockermi.sh [up|down] [options]\n\n")
+	dockermiScript.WriteString("# Usage: dockermi [up|down] [options]\n\n")
 
 	// Sort services for starting (ascending order)
 	sort.Slice(services, func(i, j int) bool {
@@ -35,7 +35,7 @@ func CreateDockermiScript(scriptPath string, services DockermiTypes.ServiceScrip
 
 	for _, service := range services {
 		dockermiScript.WriteString(fmt.Sprintf("    echo \"Starting %s...\"\n", service.ServiceName))
-		dockermiScript.WriteString(fmt.Sprintf("    docker-compose -f \"%s\" up \"$@\" \n", service.ComposeFile)) // Pass additional options
+		dockermiScript.WriteString(fmt.Sprintf("    docker-compose -f \"%s\" up \"%s\" \"$@\"\n", service.ComposeFile, service.ServiceName)) // Pass additional options and specify the service name
 		color.Cyan("\n Creating script for %v", service.ServiceName)
 		bar.Add(1)
 
@@ -50,7 +50,7 @@ func CreateDockermiScript(scriptPath string, services DockermiTypes.ServiceScrip
 	})
 	for _, service := range services {
 		dockermiScript.WriteString(fmt.Sprintf("    echo \"Stopping %s...\"\n", service.ServiceName))
-		dockermiScript.WriteString(fmt.Sprintf("    docker-compose -f \"%s\" down \"$@\"\n", service.ComposeFile)) // Pass additional options
+		dockermiScript.WriteString(fmt.Sprintf("    docker-compose -f \"%s\" down \"%s\" \"$@\"\n", service.ComposeFile, service.ServiceName))
 		bar.Add(1)
 		time.Sleep(500 * time.Millisecond) // Simulate delay for demonstration
 	}

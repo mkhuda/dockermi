@@ -1,0 +1,50 @@
+name: Build and Release
+
+on:
+  workflow_run:
+    workflows: ["Go"]  # Name of the workflow to listen for
+    types:
+      - completed  # Trigger this workflow when the Go workflow completes
+
+jobs:
+  build:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }} # Only run if the Go workflow succeeded
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '1.21'  # Set your Go version
+
+      - name: Extract version
+        id: get_version
+        run: echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV  # Use the branch/tag name
+
+      - name: Build for Linux
+        run: |
+          GOOS=linux GOARCH=amd64 go build -o dockermi-linux-${{ env.VERSION }} main.go
+          tar -czvf dockermi-linux-${{ env.VERSION }}.tar.gz dockermi-linux-${{ env.VERSION }}
+
+      - name: Build for macOS
+        run: |
+          GOOS=darwin GOARCH=amd64 go build -o dockermi-macos-${{ env.VERSION }} main.go
+          tar -czvf dockermi-macos-${{ env.VERSION }}.tar.gz dockermi-macos-${{ env.VERSION }}
+
+      - name: Build for Windows
+        run: |
+          GOOS=windows GOARCH=amd64 go build -o dockermi-${{ env.VERSION }}.exe main.go
+          zip dockermi-${{ env.VERSION }}.zip dockermi-${{ env.VERSION }}.exe
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag: ${{ github.ref_name }}  # Use the branch/tag name
+          files: |
+            dockermi-linux-${{ env.VERSION }}.tar.gz
+            dockermi-macos-${{ env.VERSION }}.tar.gz
+            dockermi-${{ env.VERSION }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
