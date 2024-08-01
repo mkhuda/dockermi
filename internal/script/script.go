@@ -35,7 +35,7 @@ func CreateDockermiScript(scriptPath string, services DockermiTypes.ServiceScrip
 
 	for _, service := range services {
 		dockermiScript.WriteString(fmt.Sprintf("    echo \"Starting %s...\"\n", service.ServiceName))
-		dockermiScript.WriteString(fmt.Sprintf("    docker-compose -f \"%s\" up \"%s\" \"$@\"\n", service.ComposeFile, service.ServiceName)) // Pass additional options and specify the service name
+		dockermiScript.WriteString(fmt.Sprintf("    docker-compose -f \"%s\" up -d \"%s\" \"$@\"\n", service.ComposeFile, service.ServiceName)) // Pass additional options and specify the service name
 		color.Cyan("\n Creating script for %v", service.ServiceName)
 		bar.Add(1)
 
@@ -56,8 +56,16 @@ func CreateDockermiScript(scriptPath string, services DockermiTypes.ServiceScrip
 	}
 	dockermiScript.WriteString("}\n\n")
 
-	// Add main logic to call the appropriate function based on the argument
-	dockermiScript.WriteString(`if [ "$#" -lt 1 ]; then
+	// Add signal trap and main logic to call the appropriate function based on the argument
+	dockermiScript.WriteString(`cleanup() {
+    echo "Caught interrupt signal. Stopping services..."
+    exit 0
+}
+
+# Register the cleanup function to be called on SIGINT (Ctrl+C)
+trap cleanup SIGINT
+
+if [ "$#" -lt 1 ]; then
     echo "Invalid argument!"
     echo "Usage: $0 [up|down] [options]"
     exit 1

@@ -1,19 +1,16 @@
 name: Build and Release
 
 on:
-  workflow_run:
-    workflows: ["Go"]  # Name of the workflow to listen for
-    types:
-      - completed  # Trigger this workflow when the Go workflow completes
+  push:
+    tags:
+      - 'v*'  # Trigger this workflow for tags like v0.1.0, v0.1.1, etc.
 
 jobs:
   build:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }} # Only run if the Go workflow succeeded
     runs-on: ubuntu-latest
     permissions:
       contents: write  # Required to create a release
       issues: read     # Optional, if you need to read issues
-      # Add other permissions as needed
 
     steps:
       - name: Checkout
@@ -24,9 +21,25 @@ jobs:
         with:
           go-version: '1.19'  # Set your Go version
 
-      - name: Extract version
-        id: get_version
-        run: echo "VERSION=${GITHUB_REF##*/}" >> $GITHUB_ENV  # Extract the tag name correctly
+      - name: Determine Version
+        id: determine_version
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF##*/}
+            echo "VERSION=${VERSION}" >> $GITHUB_ENV  # Extract the tag name
+          else
+            echo "Unrecognized reference, exiting."
+            exit 1  # Exit if it's neither a tag nor main branch
+          fi
+          echo "TAG_URL=https://github.com/${{ github.repository }}/releases/tag/${{ env.VERSION }}" >> $GITHUB_ENV
+
+      - name: Get Previous Tag
+        id: get_previous_tag
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            PREVIOUS_TAG=$(git tag --sort=-creatordate | awk -v current="${{ env.VERSION }}" '$0 == current {getline; print; exit}')
+            echo "PREVIOUS_TAG=${PREVIOUS_TAG}" >> $GITHUB_ENV
+          fi
 
       - name: Build for Linux
         run: |
@@ -44,9 +57,13 @@ jobs:
           zip dockermi-${{ env.VERSION }}.zip dockermi-${{ env.VERSION }}.exe
 
       - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/')  # Only create a release if it's a tag
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.VERSION }}  # Use the tag extracted earlier
+          name: Release ${{ env.VERSION }}
+          body: |
+            **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ env.PREVIOUS_TAG }}...${{ env.VERSION }}
           files: |
             dockermi-linux-${{ env.VERSION }}.tar.gz
             dockermi-macos-${{ env.VERSION }}.tar.gz

@@ -22,6 +22,6 @@ Options:
 Examples:
     dockermi                        # Generates a dockermi.sh script in the current directory.
     dockermi create myservicekey    # [Experimental] Create a script for the specified service key.
-    dockermi up --build              # Start services with the --build option.
+    dockermi up -d --build              # Start services with the --build option.
     dockermi down --remove-orphans   # Stop services and remove orphan containers.`)
 }

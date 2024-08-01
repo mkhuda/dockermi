@@ -16,7 +16,7 @@ import (
 	"github.com/fatih/color"
 )
 
-const version = "0.1.1"
+const version = "0.1.2"
 
 // RunDockermi executes the main logic of the dockermi command. It takes a
 // projectDir parameter, which specifies the directory where the function
@@ -69,7 +69,7 @@ func RunDockermi(projectDir string) (string, error) {
 
 // handleUpDownCommand handles the 'up' command logic.
 func handleUpDownCommand(projectDir string, command string, args []string) (string, error) {
-	color.Green("Executing 'up' command...")
+	color.Green("Executing %v command...", command)
 
 	return runDockermiScript(projectDir, command, args)
 }
