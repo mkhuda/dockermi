@@ -3,23 +3,22 @@ name: Build and Release
 on:
   push:
     tags:
-      - 'v*'  # Trigger this workflow for tags like v0.1.0, v0.1.1, etc.
+      - 'v*'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write  # Required to create a release
-      issues: read     # Optional, if you need to read issues
-
+      contents: write
+      issues: read
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Set up Go
-        uses: actions/setup-go@v2
+        uses: actions/setup-go@v5
         with:
-          go-version: '1.19'  # Set your Go version
+          go-version: '1.19'
 
       - name: Determine Version
         id: determine_version
@@ -37,7 +36,8 @@ jobs:
         id: get_previous_tag
         run: |
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            PREVIOUS_TAG=$(git tag --sort=-creatordate | awk -v current="${{ env.VERSION }}" '$0 == current {getline; print; exit}')
+            CURRENT_TAG="${{ env.VERSION }}"
+            PREVIOUS_TAG=$(git tag --sort=-creatordate | awk -v current="${CURRENT_TAG}" '$0 == current {getline; print; exit}')
             echo "PREVIOUS_TAG=${PREVIOUS_TAG}" >> $GITHUB_ENV
           fi
 
@@ -58,9 +58,9 @@ jobs:
 
       - name: Create Release
         if: startsWith(github.ref, 'refs/tags/')  # Only create a release if it's a tag
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ env.VERSION }}  # Use the tag extracted earlier
+          tag_name: ${{ env.VERSION }}
           name: Release ${{ env.VERSION }}
           body: |
             **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ env.PREVIOUS_TAG }}...${{ env.VERSION }}
