@@ -17,11 +17,11 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
-          go-version: '1.21'  # Set your Go version
+          go-version: '1.19'  # Set your Go version
 
       - name: Extract version
         id: get_version
-        run: echo "VERSION=${{ github.ref_name }}" >> $GITHUB_ENV  # Use the branch/tag name
+        run: echo "VERSION=${GITHUB_REF##*/}" >> $GITHUB_ENV  # Use the tag name (e.g., v1.0.0)
 
       - name: Build for Linux
         run: |
@@ -41,7 +41,7 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          tag: ${{ github.ref_name }}  # Use the branch/tag name
+          tag_name: ${{ env.VERSION }}  # Use the tag extracted earlier
           files: |
             dockermi-linux-${{ env.VERSION }}.tar.gz
             dockermi-macos-${{ env.VERSION }}.tar.gz
