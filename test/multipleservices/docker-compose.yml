@@ -1,0 +1,9 @@
+services:
+  dummyservice1:
+    image: hello-world
+    labels:
+      dockermi.order: "2"
+      dockermi.active: "true"
+  
+  dummyservice2:
+    image: hello-world

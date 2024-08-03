@@ -3,6 +3,7 @@ package dockercompose
 import (
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/fatih/color"
 	DockermiTypes "github.com/mkhuda/dockermi/types"
@@ -21,7 +22,7 @@ import (
 //   - []struct{Order, ServiceName, ComposeFile string}: a slice of structs containing
 //     the order, service name, and path to the docker-compose file for each relevant service
 //   - bool: a boolean indicating if any docker-compose.yml files were found
-func FindServices(root string) (DockermiTypes.ServiceScriptReturn, error) {
+func FindServices(root string, force bool) (DockermiTypes.ServiceScriptReturn, error) {
 	var services DockermiTypes.ServiceScriptReturn
 
 	err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
@@ -29,11 +30,11 @@ func FindServices(root string) (DockermiTypes.ServiceScriptReturn, error) {
 			return err
 		}
 
-		if info.IsDir() || filepath.Base(path) != "docker-compose.yml" {
+		if info.IsDir() || !strings.HasSuffix(info.Name(), ".yml") {
 			return nil
 		}
 
-		composedFiles, err := ParseComposeFile(path, false)
+		composedFiles, err := ParseComposeFile(path, false, force)
 
 		if err != nil {
 			return err
@@ -43,7 +44,14 @@ func FindServices(root string) (DockermiTypes.ServiceScriptReturn, error) {
 			order, orderExists := service.Labels["dockermi.order"]
 			active, activeExists := service.Labels["dockermi.active"]
 
+			includeService := true
 			if orderExists && activeExists && active == "true" {
+				includeService = true
+			} else if !orderExists && !activeExists {
+				includeService = force || false
+			}
+
+			if includeService {
 				services = append(services, DockermiTypes.ServiceScript{
 					Order:       order,
 					ServiceName: serviceName,
@@ -89,11 +97,11 @@ func FindServicesWithKey(root string) (map[string][]DockermiTypes.ServiceScript,
 			return err
 		}
 
-		if info.IsDir() || filepath.Base(path) != "docker-compose.yml" {
+		if info.IsDir() || !strings.HasSuffix(info.Name(), ".yml") {
 			return nil
 		}
 
-		services, err := ParseComposeFile(path, true)
+		services, err := ParseComposeFile(path, true, false)
 
 		if err != nil {
 			return err
@@ -141,7 +149,7 @@ func FindServicesWithKey(root string) (map[string][]DockermiTypes.ServiceScript,
 //   - map[string]DockermiTypes.Service: a map where the keys are service names and the values
 //     are the corresponding Service structures
 //   - error: if any errors occur during reading or parsing the file, they are returned
-func ParseComposeFile(path string, withKey bool) (map[string]DockermiTypes.Service, error) {
+func ParseComposeFile(path string, withKey bool, force bool) (map[string]DockermiTypes.Service, error) {
 	file, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
@@ -150,7 +158,9 @@ func ParseComposeFile(path string, withKey bool) (map[string]DockermiTypes.Servi
 	var composeFile DockermiTypes.DockerCompose
 	err = yaml.Unmarshal(file, &composeFile)
 	if err != nil {
-		return nil, err
+		// invalid docker-compose.yml file or yaml that can't be unmarshalled
+		// will not throw an error, just return an empty map
+		return nil, nil
 	}
 
 	// Convert the services to include their names and labels
@@ -158,6 +168,12 @@ func ParseComposeFile(path string, withKey bool) (map[string]DockermiTypes.Servi
 	for name, service := range composeFile.Services {
 		labels := service.Labels
 		hasLabel := len(labels) != 0
+		if force {
+			services[name] = DockermiTypes.Service{
+				Name:   name,
+				Labels: service.Labels,
+			}
+		}
 		if hasLabel {
 			active, activeExists := service.Labels["dockermi.active"]
 			if activeExists && active == "true" {
@@ -172,6 +188,7 @@ func ParseComposeFile(path string, withKey bool) (map[string]DockermiTypes.Servi
 					Labels: service.Labels,
 				}
 			}
+
 		}
 	}
 
