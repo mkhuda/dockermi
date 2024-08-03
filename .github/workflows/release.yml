@@ -36,8 +36,7 @@ jobs:
         id: get_previous_tag
         run: |
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            CURRENT_TAG="${{ env.VERSION }}"
-            PREVIOUS_TAG=$(git tag --sort=-creatordate | awk -v current="${CURRENT_TAG}" '$0 == current {getline; print; exit}')
+            PREVIOUS_TAG=$(git tag -l | sed -n '$!p' | tail -n 1)
             echo "PREVIOUS_TAG=${PREVIOUS_TAG}" >> $GITHUB_ENV
           fi
 
