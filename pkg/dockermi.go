@@ -16,7 +16,9 @@ import (
 	"github.com/fatih/color"
 )
 
-const version = "0.1.3"
+func GetVersion() string {
+	return "v0.1.4"
+}
 
 // RunDockermi executes the main logic of the dockermi command. It takes a
 // projectDir parameter, which specifies the directory where the function
@@ -38,12 +40,12 @@ func RunDockermi(projectDir string) (string, error) {
 
 	// Check for version flags
 	if *versionFlag || *shortVersionFlag {
-		fmt.Println("Dockermi version:", version)
+		fmt.Println("Dockermi version:", GetVersion())
 		os.Exit(0)
 	}
 
 	if *help {
-		dockermiUtils.DisplayHelp()
+		dockermiUtils.DisplayHelp(GetVersion())
 		return "", nil
 	}
 
@@ -59,12 +61,14 @@ func RunDockermi(projectDir string) (string, error) {
 				return "", fmt.Errorf("missing key for create command")
 			}
 			return createDockermiScript(projectDir, os.Args[2])
+		case "--force":
+			return generateScripts(projectDir, true)
 		default:
-			return generateScripts(projectDir)
+			return generateScripts(projectDir, false)
 		}
 	}
 	// If no specific command is provided, generate the scripts
-	return generateScripts(projectDir)
+	return generateScripts(projectDir, false)
 }
 
 // handleUpDownCommand handles the 'up' command logic.
@@ -75,8 +79,8 @@ func handleUpDownCommand(projectDir string, command string, args []string) (stri
 }
 
 // generateScripts finds docker-compose.yml files and generates corresponding scripts.
-func generateScripts(projectDir string) (string, error) {
-	services, err := dockercompose.FindServices(projectDir)
+func generateScripts(projectDir string, force bool) (string, error) {
+	services, err := dockercompose.FindServices(projectDir, force)
 	servicesLength := len(services)
 
 	if servicesLength == 0 {

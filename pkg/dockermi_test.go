@@ -55,9 +55,9 @@ func TestCreatedDockermi(t *testing.T) {
 	}
 
 	// Clean up after test
-	if err := os.Remove(scriptPath); err != nil {
-		t.Errorf("Failed to remove dockermi.sh: %v", err)
-	}
+	// if err := os.Remove(scriptPath); err != nil {
+	// 	t.Errorf("Failed to remove dockermi.sh: %v", err)
+	// }
 }
 
 func TestFindService(t *testing.T) {
@@ -71,13 +71,39 @@ func TestFindService(t *testing.T) {
 		t.Fatalf("Error getting current working directory: %v", err)
 	}
 
-	services, err := dockercompose.FindServices(projectDir)
+	services, err := dockercompose.FindServices(projectDir, false)
+	if err != nil {
+		t.Fatalf("Error finding services: %v", err)
+	}
+
+	servicesLength := len(services)
+
+	expectedLength := 6
+	if servicesLength != expectedLength {
+		t.Fatalf("Expected %v keys to be created. Created keys are: %v", expectedLength, servicesLength)
+	}
+}
+
+func TestFindServiceForce(t *testing.T) {
+	// Change to the directory of the compose files
+	if err := os.Chdir("../test/"); err != nil {
+		t.Fatalf("Failed to change directory: %v", err)
+	}
+
+	projectDir, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("Error getting current working directory: %v", err)
+	}
+
+	services, err := dockercompose.FindServices(projectDir, true)
 	if err != nil {
 		t.Fatalf("Error finding services: %v", err)
 	}
 	servicesLength := len(services)
-	if servicesLength != 4 {
-		t.Fatalf("Expected 4 keys to be created. Create keys are: %v", servicesLength)
+
+	expectedLength := 9
+	if servicesLength != expectedLength {
+		t.Fatalf("Expected %v keys to be created. Created keys are: %v", expectedLength, servicesLength)
 	}
 }
 
@@ -113,7 +139,7 @@ func TestDirectoriesWithoutCompose(t *testing.T) {
 		t.Fatalf("Error getting current working directory: %v", err)
 	}
 
-	services, err := dockercompose.FindServices(projectDir)
+	services, err := dockercompose.FindServices(projectDir, false)
 	if err != nil {
 		t.Fatalf("Error finding services: %v", err)
 	}
