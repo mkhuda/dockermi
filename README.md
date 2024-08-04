@@ -2,7 +2,7 @@
 [![Go Reference](https://pkg.go.dev/badge/github.com/mkhuda/dockermi.svg)](https://pkg.go.dev/github.com/mkhuda/dockermi) ![test workflow](https://github.com/mkhuda/dockermi/actions/workflows/go.yml/badge.svg)
 
 **Dockermi** is a command-line tool for managing Docker services defined in `docker-compose.yml` files. It simplifies the process of starting and stopping multiple Docker services with a single command, generating a shell script (`dockermi.sh`) that can be executed to perform the desired actions.
-![dockermi - docker-compose](https://github.com/user-attachments/assets/29c3928f-c5e3-46a0-bf47-9b923d97dcb3)
+![dockermi - docker-compose](https://github.com/user-attachments/assets/f8045f6b-3706-4535-8376-52741daa84b1)
 
 ## Features
 
@@ -34,7 +34,7 @@ To install the Dockermi application, follow the instructions below based on your
 ### For Linux and macOS
 #### Instant method (download latest)
 ```
-wget -qO- https://github.com/mkhuda/dockermi/releases/download/v0.1.5/dockermi-linux-v0.1.5.tar.gz | sudo tar xz -C /usr/local/bin && sudo mv /usr/local/bin/dockermi-linux-v0.1.5 /usr/local/bin/dockermi && sudo chmod +x /usr/local/bin/dockermi
+wget -qO- https://github.com/mkhuda/dockermi/releases/download/v0.1.6/dockermi-linux-v0.1.6.tar.gz | sudo tar xz -C /usr/local/bin && sudo mv /usr/local/bin/dockermi-linux-v0.1.6 /usr/local/bin/dockermi && sudo chmod +x /usr/local/bin/dockermi
 ```
 
 #### Using manual build.sh or install.sh 
