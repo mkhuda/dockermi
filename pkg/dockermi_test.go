@@ -51,7 +51,7 @@ func TestCreatedDockermi(t *testing.T) {
 	// Check if the dockermi.sh file is created
 	scriptPath := filepath.Join(currentDir, "dockermi.sh")
 	if _, err := os.Stat(scriptPath); os.IsNotExist(err) {
-		t.Errorf("Expected dockermi.sh to be created, but it was not.")
+		t.Errorf("TestCreatedDockermi Expected dockermi.sh to be created, but it was not.")
 	}
 
 	// Clean up after test
@@ -78,9 +78,9 @@ func TestFindService(t *testing.T) {
 
 	servicesLength := len(services)
 
-	expectedLength := 6
+	expectedLength := 10
 	if servicesLength != expectedLength {
-		t.Fatalf("Expected %v keys to be created. Created keys are: %v", expectedLength, servicesLength)
+		t.Fatalf("[TestFindService] Expected %v keys to be created. Created keys are: %v", expectedLength, servicesLength)
 	}
 }
 
@@ -101,9 +101,9 @@ func TestFindServiceForce(t *testing.T) {
 	}
 	servicesLength := len(services)
 
-	expectedLength := 9
+	expectedLength := 14
 	if servicesLength != expectedLength {
-		t.Fatalf("Expected %v keys to be created. Created keys are: %v", expectedLength, servicesLength)
+		t.Fatalf("[TestFindServiceForce] Expected %v keys to be created. Created keys are: %v", expectedLength, servicesLength)
 	}
 }
 
@@ -118,13 +118,14 @@ func TestFindServiceByKey(t *testing.T) {
 		t.Fatalf("Error getting current working directory: %v", err)
 	}
 
-	services, err := dockercompose.FindServicesWithKey(projectDir)
+	groupedServices, err := dockercompose.FindServicesWithKey(projectDir)
 	if err != nil {
 		t.Fatalf("Error finding services: %v", err)
 	}
-	servicesLength := len(services)
-	if servicesLength != 3 {
-		t.Fatalf("Expected 3 keys to be created. Create keys are: %v", servicesLength)
+	servicesLength := len(groupedServices)
+	expectedGroups := 2
+	if servicesLength != expectedGroups {
+		t.Fatalf("Expected %v groupedServices to be created. Grouped keys are: %v ", expectedGroups, servicesLength)
 	}
 }
 

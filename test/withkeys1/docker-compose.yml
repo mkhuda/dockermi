@@ -1,0 +1,14 @@
+services:
+  servicewithkey1x:
+    image: hello-world
+    labels:
+      dockermi.order: "1"
+      dockermi.active: "true"
+      dockermi.key: "key1"
+  
+  servicewithkey1xx:
+    image: hello-world
+    labels:
+      dockermi.order: "2"
+      dockermi.active: "true"
+      dockermi.key: "key1"
