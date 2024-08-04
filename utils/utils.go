@@ -7,7 +7,7 @@ import (
 // DisplayHelp prints the usage information for the dockermi command to the console.
 func DisplayHelp(version string) {
 	fmt.Printf(`
-Dockermi version: %s  
+Dockermi version: %s | github.com/mkhuda/dockermi
 Usage: dockermi [command] [options]
 
 This command generates a dockermi.sh script to manage Docker services defined in docker-compose.yml files.  
@@ -16,16 +16,19 @@ and the 'dockermi.sh' script is created in the current directory where the 'dock
 
 Commands:
     create <service-key>   Generate a dockermi.sh script for the specified service key.
-    up [options]           Start the Docker services defined in the dockermi.sh file in current directory.
-    down [options]         Stop the Docker services defined in the dockermi.sh file in current directory.
+    up [options]           Start the Docker services defined in the dockermi.sh file in the current directory.
+    down [options]         Stop the Docker services defined in the dockermi.sh file in the current directory.
 
 Options:
     --help                 Display this help message and exit.
     --version              Display current installed version.
+    --force                Force create dockermi.sh from all valid docker-compose files, ignoring dockermi labels convention.
     
 Examples:
     dockermi                        # Generates a dockermi.sh script in the current directory.
     dockermi create myservicekey    # [Experimental] Create a script for the specified service key.
-    dockermi up -d --build              # Start services with the --build option.
-    dockermi down --remove-orphans   # Stop services and remove orphan containers.`, version)
+    dockermi up -d --build          # Start services with the --build option.
+    dockermi down --remove-orphans   # Stop services and remove orphan containers.
+
+`, version)
 }

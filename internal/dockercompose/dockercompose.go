@@ -75,7 +75,7 @@ func FindServices(root string, force bool) (DockermiTypes.ServiceScriptReturn, e
 			} else if activeExists {
 				color.Yellow("Service '%s' is inactive (dockermi.active=false). Skipping...", serviceName)
 			} else {
-				color.Red("Service '%s' is missing 'dockermi.order' or 'dockermi.active' labels. Skipping...", serviceName)
+				color.HiYellowString("Service '%s' is missing 'dockermi.order' or 'dockermi.active' labels. Skipping...", serviceName)
 			}
 		}
 		return nil
@@ -139,7 +139,7 @@ func FindServicesWithKey(root string) (map[string][]DockermiTypes.ServiceScript,
 			} else if activeExists {
 				color.Yellow("Service '%s' is inactive (dockermi.active=false). Skipping...", serviceName)
 			} else {
-				color.Red("Service '%s' is missing 'dockermi.order' or 'dockermi.active' labels. Skipping...", serviceName)
+				color.HiYellowString("Service '%s' is missing 'dockermi.order' or 'dockermi.active' labels. Skipping...", serviceName)
 			}
 		}
 		return nil

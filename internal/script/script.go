@@ -50,7 +50,7 @@ func CreateDockermiScript(scriptPath string, services DockermiTypes.ServiceScrip
 	})
 	for _, service := range services {
 		dockermiScript.WriteString(fmt.Sprintf("    echo \"Stopping %s...\"\n", service.ServiceName))
-		dockermiScript.WriteString(fmt.Sprintf("    docker-compose -f \"%s\" down \"%s\" \"$@\"\n", service.ComposeFile, service.ServiceName))
+		dockermiScript.WriteString(fmt.Sprintf("    docker-compose -f \"%s\" stop \"%s\" \"$@\"\n", service.ComposeFile, service.ServiceName))
 		bar.Add(1)
 		time.Sleep(500 * time.Millisecond) // Simulate delay for demonstration
 	}
