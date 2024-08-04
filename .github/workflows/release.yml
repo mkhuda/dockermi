@@ -36,7 +36,15 @@ jobs:
         id: get_previous_tag
         run: |
           if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
-            PREVIOUS_TAG=$(git tag -l | sed -n '$!p' | tail -n 1)
+            # Get all tags, sort them semantically, and find the previous one
+            PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -E '^v' | awk -v current_tag="${VERSION}" '{
+              if ($0 == current_tag) {
+                found = 1; next
+              }
+              if (found) {
+                print $0; exit
+              }
+            }')
             echo "PREVIOUS_TAG=${PREVIOUS_TAG}" >> $GITHUB_ENV
           fi
 
