@@ -17,7 +17,7 @@ import (
 )
 
 func GetVersion() string {
-	return "v0.1.5"
+	return "v0.1.6"
 }
 
 // RunDockermi executes the main logic of the dockermi command. It takes a
@@ -55,7 +55,9 @@ func RunDockermi(projectDir string) (string, error) {
 		case "up":
 			return handleUpDownCommand(projectDir, "up", os.Args[2:])
 		case "down":
-			return handleUpDownCommand(projectDir, "down", os.Args[2:]) // Handle the down command
+			return handleUpDownCommand(projectDir, "down", os.Args[2:])
+		case "stop":
+			return handleUpDownCommand(projectDir, "down", os.Args[2:])
 		case "create":
 			if len(os.Args) < 3 {
 				return "", fmt.Errorf("missing key for create command")
