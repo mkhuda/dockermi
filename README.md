@@ -32,7 +32,12 @@
 To install the Dockermi application, follow the instructions below based on your operating system.
 
 ### For Linux and macOS
+#### Instant method (download latest)
+```
+wget -qO- https://github.com/mkhuda/dockermi/releases/download/v0.1.5/dockermi-linux-v0.1.5.tar.gz | sudo tar xz -C /usr/local/bin && sudo mv /usr/local/bin/dockermi-linux-v0.1.5 /usr/local/bin/dockermi && sudo chmod +x /usr/local/bin/dockermi
+```
 
+#### Using manual build.sh or install.sh 
 1. Open your terminal and clone this repo `git clone https://github.com/mkhuda/dockermi.git`.
 2. Navigate to the directory where you have the Dockermi project:
    ```bash
