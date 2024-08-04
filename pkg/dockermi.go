@@ -17,7 +17,7 @@ import (
 )
 
 func GetVersion() string {
-	return "v0.1.4"
+	return "v0.1.5"
 }
 
 // RunDockermi executes the main logic of the dockermi command. It takes a
@@ -34,8 +34,8 @@ func RunDockermi(projectDir string) (string, error) {
 	// Define flags for help and version
 	help := flag.Bool("help", false, "Display help information")
 	versionFlag := flag.Bool("version", false, "Display version information")
-	// Short version flag
 	shortVersionFlag := flag.Bool("v", false, "Display version information")
+	force := flag.Bool("force", false, "Force script generation")
 	flag.Parse()
 
 	// Check for version flags
@@ -61,14 +61,12 @@ func RunDockermi(projectDir string) (string, error) {
 				return "", fmt.Errorf("missing key for create command")
 			}
 			return createDockermiScript(projectDir, os.Args[2])
-		case "--force":
-			return generateScripts(projectDir, true)
 		default:
-			return generateScripts(projectDir, false)
+			return generateScripts(projectDir, *force)
 		}
 	}
 	// If no specific command is provided, generate the scripts
-	return generateScripts(projectDir, false)
+	return generateScripts(projectDir, *force)
 }
 
 // handleUpDownCommand handles the 'up' command logic.
@@ -148,8 +146,6 @@ func createDockermiScript(projectDir string, key string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
-	color.Red("find %v", services)
 
 	// Check if the key exists in the services map
 	groupedServices, exists := services[key]

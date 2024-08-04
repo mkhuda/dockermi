@@ -7,7 +7,9 @@ import (
 
 	"github.com/fatih/color"
 	DockermiTypes "github.com/mkhuda/dockermi/types"
+
 	"gopkg.in/yaml.v2"
+	// "github.com/goccy/go-yaml"
 )
 
 // FindServices searches for docker-compose.yml files in the specified directory.
@@ -41,14 +43,26 @@ func FindServices(root string, force bool) (DockermiTypes.ServiceScriptReturn, e
 		}
 
 		for serviceName, service := range composedFiles {
-			order, orderExists := service.Labels["dockermi.order"]
-			active, activeExists := service.Labels["dockermi.active"]
+			order, active := "", ""
+			orderExists, activeExists := false, false
 
-			includeService := true
-			if orderExists && activeExists && active == "true" {
+			// Access the labels directly
+			if val, exists := service.Labels["dockermi.order"]; exists {
+				order, orderExists = val, true
+			}
+			if val, exists := service.Labels["dockermi.active"]; exists {
+				active, activeExists = val, true
+			}
+
+			// Determine if the service should be included
+			var includeService bool
+
+			if force {
+				// If force is true, always include the service
 				includeService = true
-			} else if !orderExists && !activeExists {
-				includeService = force || false
+			} else {
+				// Otherwise, check the order and active labels
+				includeService = (orderExists && activeExists && active == "true")
 			}
 
 			if includeService {
@@ -57,6 +71,7 @@ func FindServices(root string, force bool) (DockermiTypes.ServiceScriptReturn, e
 					ServiceName: serviceName,
 					ComposeFile: path,
 				})
+
 			} else if activeExists {
 				color.Yellow("Service '%s' is inactive (dockermi.active=false). Skipping...", serviceName)
 			} else {
@@ -112,7 +127,10 @@ func FindServicesWithKey(root string) (map[string][]DockermiTypes.ServiceScript,
 			active, activeExists := service.Labels["dockermi.active"]
 			key := service.Labels["dockermi.key"] // Check for dockermi.key
 
-			if orderExists && activeExists && active == "true" {
+			if key != "" && orderExists && activeExists && active == "true" {
+				if _, exists := groups[key]; !exists {
+					groups[key] = []DockermiTypes.ServiceScript{}
+				}
 				groups[key] = append(groups[key], DockermiTypes.ServiceScript{
 					Order:       order,
 					ServiceName: serviceName,
@@ -155,42 +173,74 @@ func ParseComposeFile(path string, withKey bool, force bool) (map[string]Dockerm
 		return nil, err
 	}
 
-	var composeFile DockermiTypes.DockerCompose
+	var composeFile map[string]interface{}
 	err = yaml.Unmarshal(file, &composeFile)
 	if err != nil {
-		// invalid docker-compose.yml file or yaml that can't be unmarshalled
-		// will not throw an error, just return an empty map
 		return nil, nil
 	}
 
-	// Convert the services to include their names and labels
 	services := make(map[string]DockermiTypes.Service)
-	for name, service := range composeFile.Services {
-		labels := service.Labels
-		hasLabel := len(labels) != 0
-		if force {
-			services[name] = DockermiTypes.Service{
-				Name:   name,
-				Labels: service.Labels,
-			}
-		}
-		if hasLabel {
-			active, activeExists := service.Labels["dockermi.active"]
-			if activeExists && active == "true" {
-				// Default value for dockermi.key if not present
-				if _, exists := service.Labels["dockermi.key"]; !exists && withKey {
-					// Assign a default value or generate a unique key
-					service.Labels["dockermi.key"] = "default" // Example default value
-				}
 
-				services[name] = DockermiTypes.Service{
-					Name:   name,
-					Labels: service.Labels,
-				}
-			}
+	servicesData, exists := composeFile["services"]
+	if !exists {
+		return nil, nil
+	}
 
+	if servicesData, ok := servicesData.(map[interface{}]interface{}); ok {
+		for name, data := range servicesData {
+			if serviceData, ok := data.(map[interface{}]interface{}); ok {
+				service, err := unmarshalService(serviceData)
+				if err != nil {
+					return nil, err
+				}
+				service.Name = name.(string) // Set the service name
+				services[name.(string)] = service
+			}
 		}
 	}
 
 	return services, nil
+}
+
+// Custom unmarshal function to handle labels
+func unmarshalService(data map[interface{}]interface{}) (DockermiTypes.Service, error) {
+	service := DockermiTypes.Service{
+		Labels: make(map[string]string),
+	}
+
+	if val, ok := data["image"].(string); ok {
+		service.Image = val
+	}
+	if ports, ok := data["ports"].([]interface{}); ok {
+		for _, port := range ports {
+			if p, ok := port.(string); ok {
+				service.Ports = append(service.Ports, p)
+			}
+		}
+	}
+
+	// Handle labels
+	if labels, ok := data["labels"]; ok {
+		switch labels := labels.(type) {
+		case []interface{}:
+			for _, label := range labels {
+				if strLabel, ok := label.(string); ok {
+					parts := strings.SplitN(strLabel, "=", 2)
+					if len(parts) == 2 {
+						service.Labels[strings.TrimSpace(parts[0])] = strings.TrimSpace(parts[1])
+					}
+				}
+			}
+		case map[interface{}]interface{}:
+			for k, v := range labels {
+				if key, ok := k.(string); ok {
+					if value, ok := v.(string); ok {
+						service.Labels[key] = value
+					}
+				}
+			}
+		}
+	}
+
+	return service, nil
 }

@@ -12,9 +12,9 @@ type ServiceScriptReturn []ServiceScript
 
 // Service represents a service in the docker-compose.yml file.
 type Service struct {
-	Name string
-	// Image  string            `yaml:"image"`
-	// Ports  []string          `yaml:"ports"`
+	Name   string
+	Image  string            `yaml:"image"`
+	Ports  []string          `yaml:"ports"`
 	Labels map[string]string `yaml:"labels"`
 }
 

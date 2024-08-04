@@ -1,0 +1,14 @@
+services:
+  servicewithkey2x:
+    image: hello-world
+    labels:
+      dockermi.order: "1"
+      dockermi.active: "false" # This service is not active
+      dockermi.key: "key2"
+  
+  servicewithkey2xx:
+    image: hello-world
+    labels:
+      dockermi.order: "2"
+      dockermi.active: "true"
+      dockermi.key: "key2"
